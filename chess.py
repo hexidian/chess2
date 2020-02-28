@@ -10,7 +10,8 @@ class Piece:
         return []
 
     def __str__(self):
-        return "na"
+        return "  "
+        #return "na"
 
 class Pawn(Piece):
 
@@ -47,10 +48,13 @@ class Pawn(Piece):
             if board.grid[nextRow][self.col+1] != None:
                 moves.append([self.row,self.col,nextRow,self.col+1])
 
+        '''
         print("possible moves are:")
         print(moves)
         print("because I am at:")
         print(self.row,self.col)
+        '''
+
         return moves
 
     def isLegalMove(self,move,board):
@@ -96,11 +100,12 @@ class Rook(Piece):
         #check if the player is trying to take their own piece
         if targetPiece == None:
             return True
-        if targetPiece.color == this.color:
+        if targetPiece.color == self.color:
             return False
         return True
 
-    def possibleMoves(self,board):#NOTE: this function will not take into account if you are moving yourself into check
+    def possibleMoves(self,board):
+        #NOTE: this function will not take into account if you are moving yourself into check
         moves = []
 
         #check moving left
@@ -152,6 +157,50 @@ class Rook(Piece):
     def __str__(self):
         return ("w" if self.color else "b") + "R"
 
+class Knight(Piece):
+
+    def __init__(self,col,color):
+        self.color = color
+
+        self.col = col
+        self.row = 0 if color else 7
+
+    def __str__(self):
+        return ("w" if self.color else "b") + "N"
+
+    def isLegalMove(self,move,board):
+
+        latDist = abs(move[1] - move[3])#the lateral distance the piece is moving
+        vertDist = abs(move[0] - move[2])#the vertical distance the piece is moving
+
+        if not (latDist + vertDist == 3 and (latDist == 1 or latDist == 2) ):#think about it. It works
+            return False
+
+        targetPiece = board.grid[move[2]][move[3]]
+
+        if targetPiece == None:
+            return True
+
+        if targetPiece.color != self.color:
+            return True
+
+        return False
+
+    def possibleMoves(self,board):
+        #TODO
+        return []
+
+class Bishop(Piece):
+
+    def __init__(self,col,color):
+        self.color = color
+
+        self.col = col
+        self.row = 0 if color else 7
+
+    def __str__(self):
+        return ("w" if self.color else "b") + "B"
+
 class Board:
 
     def __init__(self):
@@ -169,6 +218,12 @@ class Board:
 
         self.grid[7][0] = Rook(0,False)
         self.grid[7][7] = Rook(7,False)
+
+        self.grid[7][1] = Knight(1,False)
+        self.grid[7][6] = Knight(6,False)
+
+        self.grid[0][1] = Knight(1,True)
+        self.grid[0][6] = Knight(6,True)
 
     def takeUserMove(self):
         raw = input("\nPlease enter your move:\n\n>>>")#TODO: make sure move is entered correctly
